@@ -3,7 +3,7 @@
 
     public class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             GameManager.ClassSetup();
             while (GameManager.Active.State != "Quit")
@@ -11,7 +11,5 @@
                 GameManager.MainMenu();
             }
         }
-
-
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Laba_3._3
+﻿namespace Laba_3._3
 {
     public class Player
     {
@@ -12,10 +6,8 @@ namespace Laba_3._3
         public int Money;
         public ArmorItem Armor;
         public WeaponItem Weapon;
+        public Ring? Ring;
         public int Health;
-
-        public delegate void PlayerDeathHandler();
-        public static event PlayerDeathHandler ?BeforePlayerDeath;
 
         public Player(PlayerBuilder builder)
         {
@@ -29,7 +21,11 @@ namespace Laba_3._3
         public void ShowPlayerStatus()
         {
             Console.WriteLine($"Имя: {Name}\n Здоровье: {Health} \n Золото: {Money}\n Броня: {Armor.Name} (ЗАЩ: {Armor.Protection})\n Оружие: {Weapon.Name} (АТК: {Weapon.Damage})\n");
-            Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            if(Ring != null)
+            {
+                Console.WriteLine($"Вы используете {Ring.Name}");
+            }
+            Console.WriteLine("\nНажмите любую клавишу для продолжения...");
             Console.ReadKey();
         }
 

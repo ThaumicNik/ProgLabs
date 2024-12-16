@@ -15,8 +15,6 @@ namespace Laba_3._3
         protected string _name;
         protected IEnemyAI _ai;
 
-        public static event EnemyDeathHandler? AfterEnemyDeath;
-
         public virtual int Health { get { return _health; } }
         public virtual int Level { get { return _level; } }
         public virtual string Name { get { return _name; } }
@@ -39,7 +37,6 @@ namespace Laba_3._3
         public void Die()
         {
             GameManager.GetActive().State = "PlayerWin";
-            AfterEnemyDeath?.Invoke(this);
         }
 
         public string TakeDamage(int damage)

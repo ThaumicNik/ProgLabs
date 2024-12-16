@@ -20,8 +20,5 @@ namespace Laba_3._3
 
         // Ссылка на противника нужна для обработки логики элитных противников
         public string MakeTurn(IEnemy enemy);
-
-        public delegate void EnemyDeathHandler(IEnemy enemy);
-        public static event EnemyDeathHandler? AfterEnemyDeath;
     }
 }
