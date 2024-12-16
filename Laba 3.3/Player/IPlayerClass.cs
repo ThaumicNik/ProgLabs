@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Laba_3._3
 {
-    internal interface ILocation
+    public interface IPlayerClass
     {
-        string SpawnEnemy();
+        WeaponItem GetWeapon();
+
+        ArmorItem GetArmor();
     }
 }

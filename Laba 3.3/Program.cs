@@ -5,8 +5,11 @@
     {
         static void Main(string[] args)
         {
-
-            WorldStatus.Active.CurrentPlayer.ShowPlayerStatus();
+            GameManager.ClassSetup();
+            while (GameManager.Active.State != "Quit")
+            {
+                GameManager.MainMenu();
+            }
         }
 
 

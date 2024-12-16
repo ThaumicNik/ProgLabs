@@ -4,63 +4,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Laba_3._3.Enemies
+namespace Laba_3._3
 {
     // Вместо абстрактного класса я использую интерфейсы.
     // В связи с тем, что в послдених версиях C# есть возможность
     // запихивать свойства в интерфейсы, я использую
     // наследование от интерфейса
-    internal class BasicEliteEnemy : IEnemy
+    public class BasicEliteEnemy : IEnemy
     {
         protected IEnemy _originalEnemy;
         
         // Благодаря интерфейсу мы не создаём лишние поля, а используем одно поле и кучу свойств
-        public int Health { get { return _originalEnemy.Health; } }
-        public int Damage { get { return _originalEnemy.Damage; } }
-        public int Level { get { return _originalEnemy.Level; } }
-        public string Name { get { return _originalEnemy.Name; } }
+        public virtual int Health { get { return _originalEnemy.Health; } }
+        public virtual int Damage { get { return _originalEnemy.Damage; } }
+        public virtual int Level { get { return _originalEnemy.Level; } }
+        public virtual string Name { get { return _originalEnemy.Name; } }
 
-        public virtual int AttackPlayer() => _originalEnemy.AttackPlayer();
+        public virtual string AttackPlayer() => _originalEnemy.AttackPlayer();
 
         public virtual void Die() => _originalEnemy.Die();
 
-        public virtual int TakeDamage(int damage) => _originalEnemy.TakeDamage(damage);
+        public virtual string TakeDamage(int damage) => _originalEnemy.TakeDamage(damage);
 
-        public virtual int Heal(int healAmount) => _originalEnemy.Heal(healAmount);
+        public virtual string Heal(int healAmount) => _originalEnemy.Heal(healAmount);
 
-        internal BasicEliteEnemy(IEnemy originalEnemy)
+        public virtual string MakeTurn(IEnemy enemy) => _originalEnemy.MakeTurn(enemy);
+
+        public BasicEliteEnemy(IEnemy originalEnemy)
         {
             this._originalEnemy = originalEnemy;
         }
     }
 
-    internal class TornedEnemy : BasicEliteEnemy
+    public class TornedEnemy : BasicEliteEnemy
     {
-        TornedEnemy(IEnemy originalEnemy) : base(originalEnemy) { }
+        public TornedEnemy(IEnemy originalEnemy) : base(originalEnemy) { }
 
-        override public int TakeDamage(int damage)
+        public override string Name { get { return $"Шипастый {_originalEnemy.Name}"; } }
+
+        override public string TakeDamage(int damage)
         {
-            int output = base.TakeDamage(damage);
+            string output = base.TakeDamage(damage);
             int playerDamage = damage / 2;
-            Console.WriteLine($"{Name} колит вас своими колючками на {playerDamage} урона!");
-            WorldStatus.GetActive().CurrentPlayer.Health -= playerDamage;
-            if(WorldStatus.GetActive().CurrentPlayer.Health <= 1)
+            output += $"\n\n{Name} колит вас своими шипами на {playerDamage} урона!";
+            GameManager.GetActive().CurrentPlayer.Health -= playerDamage;
+            if(GameManager.GetActive().CurrentPlayer.Health <= 1)
             {
-                // Player Death
+                GameManager.GetActive().State = "PlayerDied";
             }
             return output;
         }
     }
-
-    internal class VampiricEnemy : BasicEliteEnemy
+    public class VampiricEnemy : BasicEliteEnemy
     {
-    VampiricEnemy(IEnemy originalEnemy) : base(originalEnemy) { }
+        public VampiricEnemy(IEnemy originalEnemy) : base(originalEnemy) { }
 
-        public override int AttackPlayer()
+        public override string AttackPlayer()
         {
-            int output = base.AttackPlayer();
-            Heal(output);
-            return output;
+            string output = base.AttackPlayer();
+            Heal(Damage/3);
+            return output + $"\n\n{Name} лечится за счёт вашей крови на {Damage / 3} здоровья!";
         }
+
+        public override string Name { get { return $"Вампирический {_originalEnemy.Name}"; } }
     }
 }

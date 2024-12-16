@@ -10,28 +10,30 @@ namespace Laba_3._3
     {
         public string Name;
         public int Money;
-        public string Armor;
-        public string Weapon;
+        public ArmorItem Armor;
+        public WeaponItem Weapon;
         public int Health;
-        internal ILocation Location;
 
-        internal Player(PlayerBuilder builder)
+        public delegate void PlayerDeathHandler();
+        public static event PlayerDeathHandler ?BeforePlayerDeath;
+
+        public Player(PlayerBuilder builder)
         {
             this.Name = builder._name;
             this.Money = builder.Money;
             this.Armor = builder.PlayerClass.GetArmor();
             this.Weapon = builder.PlayerClass.GetWeapon();
             this.Health = builder.Health;
-            this.Location = builder.PlayerClass.GetStartLocation();
-            WorldStatus.GetActive().CurrentPlayer = this;
         }
 
         public void ShowPlayerStatus()
         {
-            Console.WriteLine($"Name: {Name}\n Money {Money}\n Armor {Armor}\n Weapon {Weapon}\n Health {Health}\n\nNext enemy: {Location.SpawnEnemy()}\n\n");
+            Console.WriteLine($"Имя: {Name}\n Здоровье: {Health} \n Золото: {Money}\n Броня: {Armor.Name} (ЗАЩ: {Armor.Protection})\n Оружие: {Weapon.Name} (АТК: {Weapon.Damage})\n");
+            Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            Console.ReadKey();
         }
 
-        internal class PlayerBuilder
+        public class PlayerBuilder
         {
             public string _name;
             public int Money;
@@ -70,6 +72,7 @@ namespace Laba_3._3
             public PlayerBuilder()
             {
                 _name = "";
+                PlayerClass = new Warrior();
             }
         }
     }

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace Laba_3._3
 {
-    internal interface IPlayerClass
+    public abstract class GameItem
     {
-        string GetWeapon();
+        public string Name;
 
-        string GetArmor();
-
-        ILocation GetStartLocation();
+        public GameItem()
+        {
+            Name = string.Empty;
+        }
     }
 }

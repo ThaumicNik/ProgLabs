@@ -3,94 +3,109 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Laba_3._3.IEnemy;
 
-namespace Laba_3._3.Enemies
+namespace Laba_3._3
 {
-    internal abstract class BasicEnemy : IEnemy
+    public abstract class BasicEnemy : IEnemy
     {
         protected int _health;
         protected int _level;
         protected int _damage;
         protected string _name;
+        protected IEnemyAI _ai;
 
-        public int Health { get { return _health; } }
-        public int Level { get { return _level; } }
-        public string Name { get { return _name; } }
-        public int Damage { get { return _damage; } }
+        public static event EnemyDeathHandler? AfterEnemyDeath;
 
-        public int AttackPlayer()
+        public virtual int Health { get { return _health; } }
+        public virtual int Level { get { return _level; } }
+        public virtual string Name { get { return _name; } }
+        public virtual int Damage { get { return _damage; } }
+
+        public string AttackPlayer()
         {
-            if (WorldStatus.GetActive().CurrentPlayer == null)
-                return 0;
-            WorldStatus.GetActive().CurrentPlayer.Health -= _damage;
-            if(WorldStatus.GetActive().CurrentPlayer.Health <= 0)
+            if (GameManager.GetActive().CurrentPlayer == null)
+                return "";
+            int finalDamage = _damage / GameManager.GetActive().CurrentPlayer.Armor.Protection;
+            GameManager.GetActive().CurrentPlayer.Health -= finalDamage;
+            if(GameManager.GetActive().CurrentPlayer.Health <= 0)
             {
-                // TODO Death
-                WorldStatus.GetActive().CurrentPlayer.ShowPlayerStatus();
+                GameManager.GetActive().State = "PlayerDied";
+                GameManager.GetActive().CurrentPlayer.ShowPlayerStatus();
             }
-            return _damage;
+            return $"{Name} атакует вас, нанеся {finalDamage} урона!";
         }
 
         public void Die()
         {
-            Console.WriteLine($"{_name} dies.");
+            GameManager.GetActive().State = "PlayerWin";
+            AfterEnemyDeath?.Invoke(this);
         }
 
-        public int TakeDamage(int damage)
+        public string TakeDamage(int damage)
         {
             _health -= damage;
             if(_health <= 0)
             {
                 Die();
             }
-            return damage;
+            return $"Вы наносите {damage} урона {Name}.";
         }
 
-        public int Heal(int healAmount)
+        public string Heal(int healAmount)
         {
             _health += healAmount;
-            return healAmount;
+            return $"{Name} лечит себя на {healAmount} единиц здоровья.";
         }
 
-        internal BasicEnemy()
+        public string MakeTurn(IEnemy enemy)
+        {
+            return _ai.MakeTurn(enemy);
+        }
+
+        public BasicEnemy()
         {
             _health = 0;
             _level = 0;
             _damage = 0;
             _name = "I'M AN ERROR";
+            _ai = new AIStupidAttack();
         }
     }
 
-    internal class Goblin : BasicEnemy
+    public class Goblin : BasicEnemy
     {
-        internal Goblin()
+        public Goblin()
         {
             _health = 50;
             _level = 1;
             _damage = 5;
-            _name = "Goblin";
+            _name = "Гоблин";
+            _ai = new AIStupidAttack();
         }
     }
 
-    internal class Devil : BasicEnemy
+    public class Devil : BasicEnemy
     {
-        internal Devil()
+        public Devil()
         {
             _health = 100;
             _level = 5;
             _damage = 20;
-            _name = "Devil";
+            _name = "Дьявол";
+            _ai = new AIAttackNHeal();
         }
     }
 
-    internal class Skeleton : BasicEnemy
+    public class Skeleton : BasicEnemy
     {
-        internal Skeleton()
+        public Skeleton()
         {
             _health = 60;
             _level = 2;
             _damage = 10;
-            _name = "Skeleton";
+            _name = "Скелет";
+            _ai = new AIStupidAttack();
         }
     }
 }
